@@ -1,5 +1,5 @@
 
-import z, { zod } from "zod";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
@@ -21,7 +21,7 @@ const formSchema = z.object({
 
 export default function LoginForm() {
 
-  const form = useForm < z.infer < typeof formSchema >> ({
+  const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
@@ -65,6 +65,7 @@ export default function LoginForm() {
                   </svg>
                 </div>
                 <input
+                  {...form.register("email")}
                   type="email"
                   id="email"
                   name="email"
@@ -92,6 +93,7 @@ export default function LoginForm() {
                   </svg>
                 </div>
                 <input
+                  {...form.register("password")}
                   type="password"
                   id="password"
                   name="password"
