@@ -1,0 +1,52 @@
+# Dependencies
+**/node_modules/
+
+# Environment and local configuration
+**/.env
+**/.env.*
+!.env.example
+!.env.template
+
+# Logs and debug output
+**/logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Frontend build output and Vite caches
+**/dist/
+**/dist-ssr/
+**/.vite/
+**/.vite-temp/
+*.local
+
+# Server and test output
+server/coverage/
+server/.nyc_output/
+server/.vitest/
+server/.vitest-cache/
+
+# TypeScript and tool caches
+**/.cache/
+**/.eslintcache
+**/*.tsbuildinfo
+
+# Editor and operating-system files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Local databases and runtime files
+*.sqlite
+*.sqlite3
+*.db
+*.pid
