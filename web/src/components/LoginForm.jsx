@@ -20,6 +20,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/toast";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "@/store/authSlice";
 
 const formSchema = z.object({
   email: z
@@ -45,6 +47,7 @@ const formSchema = z.object({
 
 export default function LoginForm() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -72,6 +75,8 @@ export default function LoginForm() {
         throw new Error(result.message || "Login failed");
       }
 
+      dispatch(setCredentials(result.user));
+
       toast.add({
         type: "success",
         title: "Login successful",
@@ -80,6 +85,7 @@ export default function LoginForm() {
 
       if (result.user.role === "ADMIN") navigate("/admin/dashboard");
       else if (result.user.role === "USER") navigate("/user/dashboard");
+      else if (result.user.role === "OWNER") navigate("/owner/dashboard");
     } catch (error) {
       console.error("Unable to connect to the server ", error);
       toast.add({
