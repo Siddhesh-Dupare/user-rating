@@ -1,12 +1,13 @@
 
 import DashboardLayout from "../DashboardLayout";
+import WelcomeMessage from "../WelcomeMessage";
 
 export default function Admin() {
   return (
     <DashboardLayout>
-      <h1>
-        Welcome
-      </h1>
+      <section className="p-6">
+        <WelcomeMessage />
+      </section>
     </DashboardLayout>
   );
 }
