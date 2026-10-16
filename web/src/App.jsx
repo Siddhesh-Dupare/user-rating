@@ -14,7 +14,6 @@ function App() {
         <Routes>
           <Route path="/login" element={<LoginMain />} />
           <Route path="/signup" element={<SignupMain />} />
-          {/* <Route path="/admin/dashboard" element={<Dashboard role="ADMIN" />} />*/}
           <Route
             path="/admin/dashboard"
             element={
