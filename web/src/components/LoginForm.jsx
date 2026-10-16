@@ -44,6 +44,8 @@ const formSchema = z.object({
 });
 
 export default function LoginForm() {
+  const navigate = useNavigate();
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -75,6 +77,10 @@ export default function LoginForm() {
         title: "Login successful",
         description: result.message,
       });
+
+      if (result.user.role === "ADMIN")
+        navigate("/admin/dashboard");
+
     } catch (error) {
       console.error("Unable to connect to the server ", error);
       toast.add({
