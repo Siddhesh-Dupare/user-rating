@@ -5,7 +5,7 @@ import { loginAdministrator } from "../../src/controllers/authController.js";
 describe("Get the system administrator", () => {
   const administratorCredentials = {
     email: "admin@gmail.com",
-    password: "admin@123",
+    password: "Admin@12345",
   };
 
   test("should retrieve administrator user", async () => {
