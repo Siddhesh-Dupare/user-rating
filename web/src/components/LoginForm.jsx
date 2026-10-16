@@ -166,17 +166,9 @@ export default function LoginForm() {
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
-                      <div className="flex items-center justify-between">
-                        <FieldLabel htmlFor="form-password">
-                          Password
-                        </FieldLabel>
-                        <a
-                          href="#"
-                          className="text-sm font-medium text-blue-600 transition-colors hover:text-blue-700"
-                        >
-                          Forgot password?
-                        </a>
-                      </div>
+                      <FieldLabel htmlFor="form-password">
+                        Password
+                      </FieldLabel>
                       <Input
                         {...field}
                         id="form-password"
@@ -193,17 +185,6 @@ export default function LoginForm() {
                   )}
                 />
               </FieldGroup>
-
-              {/* Remember me & Submit */}
-              <div className="flex items-center justify-between">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 transition-colors"
-                  />
-                  <span className="text-sm text-slate-600">Remember me</span>
-                </label>
-              </div>
 
               <Button
                 type="submit"
@@ -234,17 +215,6 @@ export default function LoginForm() {
           </CardFooter>
         </Card>
 
-        {/* Footer note */}
-        <p className="text-center text-sm text-slate-500 mt-6">
-          By signing in, you agree to our{" "}
-          <a href="#" className="text-blue-600 hover:text-blue-700 underline">
-            Terms of Service
-          </a>{" "}
-          and{" "}
-          <a href="#" className="text-blue-600 hover:text-blue-700 underline">
-            Privacy Policy
-          </a>
-        </p>
       </div>
     </div>
   );
