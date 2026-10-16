@@ -90,3 +90,27 @@ export async function getAdminStats(req, res) {
     });
   }
 }
+
+export async function getStoreOwners(req, res) {
+  const { name = "", email = "", address = "" } = req.query;
+
+  try {
+    const result = await pool.query(
+      `SELECT id, name, email, address, role
+       FROM users
+       WHERE role = 'STORE_OWNER'
+         AND name ILIKE $1
+         AND email ILIKE $2
+         AND address ILIKE $3
+       ORDER BY name`,
+      [`%${name}%`, `%${email}%`, `%${address}%`],
+    );
+
+    return res.status(200).json({ stores: result.rows });
+  } catch (error) {
+    console.error("Store owner retrieval failed", error);
+    return res.status(500).json({
+      message: "Unable to retrieve store owners",
+    });
+  }
+}

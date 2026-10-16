@@ -30,6 +30,7 @@ import { clearCredentials } from "@/store/authSlice";
 import CreateAdmin from "./CreateAdmin";
 import CreateUser from "./CreateUser";
 import CreateStore from "./CreateStore";
+import StoresTable from "./StoresTable";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -51,6 +52,7 @@ export default function Dashboard({ role }) {
   const [isCreateAdminOpen, setIsCreateAdminOpen] = useState(false);
   const [isCreateUserOpen, setIsCreateUserOpen] = useState(false);
   const [isCreateStoreOpen, setIsCreateStoreOpen] = useState(false);
+  const [isStoresOpen, setIsStoresOpen] = useState(false);
   const [adminStats, setAdminStats] = useState(null);
   const dashboardRole = user?.role || role;
   const roleLabel = dashboardRole
@@ -95,7 +97,11 @@ export default function Dashboard({ role }) {
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuButton isActive tooltip="Dashboard">
+                  <SidebarMenuButton
+                    isActive={!isStoresOpen}
+                    tooltip="Dashboard"
+                    onClick={() => setIsStoresOpen(false)}
+                  >
                     <LayoutDashboard />
                     <span>Dashboard</span>
                   </SidebarMenuButton>
@@ -112,6 +118,18 @@ export default function Dashboard({ role }) {
                     <span>Users</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
+                {dashboardRole === "ADMIN" && (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      isActive={isStoresOpen}
+                      tooltip="Stores"
+                      onClick={() => setIsStoresOpen(true)}
+                    >
+                      <Store />
+                      <span>Stores</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
                 <SidebarMenuItem>
                   <SidebarMenuButton tooltip="Settings">
                     <Settings />
@@ -160,56 +178,62 @@ export default function Dashboard({ role }) {
       </Sidebar>
       <main className="flex-1 p-2">
         <SidebarTrigger />
-        <div className="mt-8 flex items-center justify-between gap-4 px-4">
-          <h1 className="text-2xl font-semibold">Welcome {firstName}</h1>
-          {dashboardRole === "ADMIN" && (
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Plus className="size-4" />
-                Create
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setIsCreateUserOpen(true)}>
-                  Create User
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setIsCreateStoreOpen(true)}>
-                  Create Store
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setIsCreateAdminOpen(true)}
-                >
-                  Create Admin
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-        </div>
-        {dashboardRole === "ADMIN" && (
-          <Card className="ml-4 mt-8 w-full max-w-sm">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Platform Overview</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-4">
-              <div className="flex items-center gap-3">
-                <Users className="size-5 text-muted-foreground" />
-                <div>
-                  <p className="text-2xl font-semibold">
-                    {adminStats?.totalUsers ?? "--"}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Users</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Store className="size-5 text-muted-foreground" />
-                <div>
-                  <p className="text-2xl font-semibold">
-                    {adminStats?.totalStores ?? "--"}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Stores</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        {isStoresOpen ? (
+          <StoresTable onBack={() => setIsStoresOpen(false)} />
+        ) : (
+          <>
+            <div className="mt-8 flex items-center justify-between gap-4 px-4">
+              <h1 className="text-2xl font-semibold">Welcome {firstName}</h1>
+              {dashboardRole === "ADMIN" && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <Plus className="size-4" />
+                    Create
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => setIsCreateUserOpen(true)}>
+                      Create User
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setIsCreateStoreOpen(true)}>
+                      Create Store
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setIsCreateAdminOpen(true)}
+                    >
+                      Create Admin
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </div>
+            {dashboardRole === "ADMIN" && (
+              <Card className="ml-4 mt-8 w-full max-w-sm">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base">Platform Overview</CardTitle>
+                </CardHeader>
+                <CardContent className="grid grid-cols-2 gap-4">
+                  <div className="flex items-center gap-3">
+                    <Users className="size-5 text-muted-foreground" />
+                    <div>
+                      <p className="text-2xl font-semibold">
+                        {adminStats?.totalUsers ?? "--"}
+                      </p>
+                      <p className="text-sm text-muted-foreground">Users</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Store className="size-5 text-muted-foreground" />
+                    <div>
+                      <p className="text-2xl font-semibold">
+                        {adminStats?.totalStores ?? "--"}
+                      </p>
+                      <p className="text-sm text-muted-foreground">Stores</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </>
         )}
       </main>
       {isCreateAdminOpen && (
