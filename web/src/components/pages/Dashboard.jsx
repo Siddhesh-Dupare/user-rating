@@ -40,6 +40,7 @@ import CreateStore from "./CreateStore";
 import StoresTable from "./StoresTable";
 import UsersTable from "./UsersTable";
 import StoreListingsTable from "./StoreListingsTable";
+import StoreOwnerRatings from "./StoreOwnerRatings";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -310,6 +311,9 @@ export default function Dashboard({ role }) {
             )}
             {dashboardRole === "USER" && (
               <StoreListingsTable userEmail={user?.email} />
+            )}
+            {dashboardRole === "STORE_OWNER" && (
+              <StoreOwnerRatings ownerEmail={user?.email} />
             )}
           </>
         )}

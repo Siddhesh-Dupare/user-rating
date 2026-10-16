@@ -131,3 +131,52 @@ export async function submitRating(req, res) {
     return res.status(500).json({ message: "Unable to submit rating" });
   }
 }
+
+export async function getStoreOwnerRatings(req, res) {
+  const ownerEmail = String(req.query?.ownerEmail || "");
+
+  if (!ownerEmail) {
+    return res.status(400).json({ message: "Store owner email is required" });
+  }
+
+  try {
+    const result = await pool.query(
+      `SELECT store.id AS "storeId",
+              store.name AS "storeName",
+              COALESCE(ROUND(AVG(ratings.rating) OVER (), 2), 0) AS "averageRating",
+              ratings.rating,
+              rating_user.name,
+              rating_user.email,
+              rating_user.address
+       FROM users store
+       LEFT JOIN ratings ON ratings.store_id = store.id
+       LEFT JOIN users rating_user ON rating_user.id = ratings.user_id
+       WHERE store.email = $1
+         AND store.role = 'STORE_OWNER'
+       ORDER BY rating_user.name`,
+      [ownerEmail],
+    );
+
+    if (!result.rows.length) {
+      return res.status(404).json({ message: "Store owner not found" });
+    }
+
+    const { storeId, storeName, averageRating } = result.rows[0];
+    return res.status(200).json({
+      store: { id: storeId, name: storeName, averageRating },
+      ratings: result.rows
+        .filter((row) => row.email)
+        .map(({ name, email, address, rating }) => ({
+          name,
+          email,
+          address,
+          rating,
+        })),
+    });
+  } catch (error) {
+    console.error("Store owner ratings retrieval failed", error);
+    return res.status(500).json({
+      message: "Unable to retrieve store owner ratings",
+    });
+  }
+}
