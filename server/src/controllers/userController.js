@@ -66,7 +66,13 @@ export async function createUser(req, res) {
 }
 
 export async function changePassword(req, res) {
-  const { email, currentPassword, newPassword } = req.body;
+  const { email, role, currentPassword, newPassword } = req.body;
+
+  if (role !== "USER" && role !== "STORE_OWNER") {
+    return res.status(403).json({
+      message: "Only users and store owners can change their password",
+    });
+  }
 
   if (
     typeof newPassword !== "string" ||
@@ -84,19 +90,28 @@ export async function changePassword(req, res) {
   }
 
   try {
-    const userResult = await pool.query(
-      "SELECT password FROM users WHERE email = $1",
-      [email],
-    );
+    const userResult = role
+      ? await pool.query(
+          "SELECT password FROM users WHERE email = $1 AND role = $2",
+          [email, role],
+        )
+      : await pool.query("SELECT password FROM users WHERE email = $1", [email]);
 
     if (!userResult.rows.length || userResult.rows[0].password !== currentPassword) {
       return res.status(401).json({ message: "Current password is incorrect" });
     }
 
-    await pool.query("UPDATE users SET password = $1 WHERE email = $2", [
-      newPassword,
-      email,
-    ]);
+    if (role) {
+      await pool.query(
+        "UPDATE users SET password = $1 WHERE email = $2 AND role = $3",
+        [newPassword, email, role],
+      );
+    } else {
+      await pool.query("UPDATE users SET password = $1 WHERE email = $2", [
+        newPassword,
+        email,
+      ]);
+    }
 
     return res.status(200).json({ message: "Password changed successfully" });
   } catch (error) {

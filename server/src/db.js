@@ -23,6 +23,36 @@ export async function ensureRatingsTable() {
   `);
 }
 
+export async function ensureRoleScopedEmailConstraint() {
+  await pool.query(`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint
+        WHERE conrelid = 'users'::regclass AND conname = 'users_email_role_key'
+      ) THEN
+        NULL;
+      ELSE
+        ALTER TABLE users DROP CONSTRAINT users_email_role_key;
+      END IF;
+
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint
+        WHERE conrelid = 'users'::regclass AND conname = 'users_email_key'
+      ) THEN
+        ALTER TABLE users ADD CONSTRAINT users_email_key UNIQUE (email);
+      END IF;
+
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint
+        WHERE conrelid = 'users'::regclass AND conname = 'users_name_key'
+      ) THEN
+        ALTER TABLE users ADD CONSTRAINT users_name_key UNIQUE (name);
+      END IF;
+    END $$;
+  `);
+}
+
 pool.on("error", (err) => {
   console.error("Unexpected PostGreSQL pool Error: ", err);
 });

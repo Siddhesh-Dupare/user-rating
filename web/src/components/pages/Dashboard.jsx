@@ -93,7 +93,7 @@ export default function Dashboard({ role }) {
       const response = await fetch("http://localhost:5000/api/user/password", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, email: user?.email }),
+        body: JSON.stringify({ ...data, email: user?.email, role: user?.role }),
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.message || "Unable to change password");
@@ -202,7 +202,8 @@ export default function Dashboard({ role }) {
         </SidebarContent>
         <SidebarFooter>
           <SidebarMenu>
-            {isProfileOpen && (
+            {isProfileOpen &&
+              (dashboardRole === "USER" || dashboardRole === "STORE_OWNER") && (
               <SidebarMenuItem>
                 <SidebarMenuButton
                   type="button"

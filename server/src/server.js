@@ -4,7 +4,7 @@ import authRouter from "./routes/authRoutes.js";
 import userRouter from "./routes/userRoutes.js";
 import storeRouter from "./routes/storeRoutes.js";
 import adminRouter from "./routes/adminRoutes.js";
-import { ensureRatingsTable } from "./db.js";
+import { ensureRatingsTable, ensureRoleScopedEmailConstraint } from "./db.js";
 
 const server = express();
 const PORT = 5000;
@@ -22,7 +22,7 @@ server.use("/api/admin", adminRouter);
 
 server.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
-  ensureRatingsTable().catch((error) => {
+  Promise.all([ensureRatingsTable(), ensureRoleScopedEmailConstraint()]).catch((error) => {
     console.error("Unable to initialize ratings table", error);
   });
 });
