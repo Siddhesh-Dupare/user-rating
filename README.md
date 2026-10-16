@@ -51,10 +51,52 @@ DB_PASSWORD=your_postgres_password
 PORT=5000
 ```
 
-The server creates the ratings table when it starts. The existing `users` table
-must contain `id`, `name`, `email`, `password`, `address`, and `role` columns.
-User roles are `USER`, `STORE_OWNER`, and `ADMIN`. Names and email addresses
-must be unique across all roles.
+The server creates the `ratings` table when it starts. The `users` table must
+contain the following PostgreSQL schema:
+
+### `public.users`
+
+| Column | Type | Nullable | Default |
+| --- | --- | --- | --- |
+| `id` | `uuid` | Not null | `gen_random_uuid()` |
+| `name` | `character varying(60)` | Not null | — |
+| `email` | `character varying(255)` | Not null | — |
+| `password` | `character varying(255)` | Not null | — |
+| `address` | `character varying(400)` | Not null | — |
+| `role` | `character varying(20)` | Not null | — |
+| `created_at` | `timestamp with time zone` | Not null | `CURRENT_TIMESTAMP` |
+| `updated_at` | `timestamp with time zone` | Not null | `CURRENT_TIMESTAMP` |
+
+The table has the following indexes and constraints:
+
+```text
+Indexes:
+  users_pkey PRIMARY KEY, btree (id)
+  users_email_key UNIQUE CONSTRAINT, btree (email)
+
+Check constraints:
+  users_name_check
+    CHECK (char_length(name) >= 20 AND char_length(name) <= 60)
+  users_role_check
+    CHECK (role IN ('ADMIN', 'USER', 'STORE_OWNER'))
+```
+
+Supported roles are `USER`, `STORE_OWNER`, and `ADMIN`. Email addresses are
+unique across all roles.
+
+### `public.ratings`
+
+The ratings table is created automatically by the server:
+
+| Column | Type | Constraint |
+| --- | --- | --- |
+| `id` | `serial` | Primary key |
+| `store_id` | `uuid` | Foreign key to `users(id)`, cascade on delete |
+| `user_id` | `uuid` | Foreign key to `users(id)`, cascade on delete |
+| `rating` | `integer` | Must be between 1 and 5 |
+
+The combination of `store_id` and `user_id` is unique, so each user has one
+rating per store that can be updated later.
 
 ## Installation and development
 

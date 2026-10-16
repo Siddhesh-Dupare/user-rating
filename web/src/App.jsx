@@ -1,5 +1,6 @@
 import LoginMain from "./components/pages/auth/login/LoginMain";
 import SignupMain from "./components/pages/auth/signup/SignupMain";
+import LandingPage from "./components/pages/LandingPage";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "./components/ui/toast";
 import Admin from "@/components/pages/users/admin/Admin";
@@ -12,6 +13,7 @@ function App() {
     <Toaster>
       <BrowserRouter>
         <Routes>
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginMain />} />
           <Route path="/signup" element={<SignupMain />} />
           <Route
