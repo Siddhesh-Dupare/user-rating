@@ -11,7 +11,7 @@ const columns = [
     key: "rating",
     label: "Rating",
     render: (value) => (
-      <span className="inline-flex items-center gap-1.5 font-medium text-amber-300">
+      <span className="inline-flex items-center gap-1.5 font-medium text-[#1824ff]">
         <Star className="h-4 w-4 fill-current" />
         {value ?? "0"}
       </span>

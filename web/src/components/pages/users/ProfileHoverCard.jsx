@@ -24,25 +24,25 @@ export default function ProfileHoverCard() {
         <button
           type="button"
           aria-label="Open profile"
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-[#6842f5] text-white ring-2 ring-[#6842f5]/30 transition hover:ring-[#6842f5]/70"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1824ff] text-white ring-2 ring-[#1824ff]/20 transition hover:ring-[#1824ff]/50"
         >
           <CircleUserRound className="h-6 w-6" />
         </button>
       </HoverCardTrigger>
       <HoverCardContent
         align="end"
-        className="w-72 border-white/10 bg-[#202126] p-0 text-zinc-100 shadow-2xl shadow-black/40"
+        className="w-72 border-[#e1e5ec] bg-white p-0 text-[#172033] shadow-2xl shadow-[#1f2b44]/10"
       >
-        <div className="border-b border-white/10 bg-gradient-to-br from-[#6842f5]/25 to-transparent p-4">
+        <div className="border-b border-[#e1e5ec] bg-gradient-to-br from-[#1824ff]/10 to-transparent p-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#6842f5] text-lg font-semibold text-white">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#1824ff] text-lg font-semibold text-white">
               {(user?.name || "U").charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0">
-              <p className="truncate font-semibold text-white">
+              <p className="truncate font-semibold text-[#172033]">
                 {user?.name || "User"}
               </p>
-              <p className="truncate text-xs text-zinc-400">
+              <p className="truncate text-xs text-[#7b8494]">
                 {user?.email || "No email available"}
               </p>
             </div>
@@ -51,7 +51,7 @@ export default function ProfileHoverCard() {
         <div className="space-y-1 p-2">
           <button
             type="button"
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-zinc-300 transition hover:bg-[#6842f5] hover:text-white"
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-[#4f596b] transition hover:bg-[#1824ff] hover:text-white"
           >
             <KeyRound className="h-4 w-4" />
             <span>Change password</span>
@@ -59,7 +59,7 @@ export default function ProfileHoverCard() {
           <button
             type="button"
             onClick={handleLogout}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-red-300 transition hover:bg-red-500/15 hover:text-red-200"
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-red-500 transition hover:bg-red-50 hover:text-red-600"
           >
             <LogOut className="h-4 w-4" />
             <span>Log out</span>

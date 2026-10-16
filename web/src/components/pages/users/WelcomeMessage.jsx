@@ -5,7 +5,7 @@ export default function WelcomeMessage() {
   const firstName = user?.name?.trim().split(/\s+/)[0] || "Admin";
 
   return (
-    <h1 className="text-3xl font-bold text-white">
+    <h1 className="text-3xl font-bold text-[#172033]">
       Welcome, {firstName}
     </h1>
   );

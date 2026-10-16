@@ -8,19 +8,19 @@ const statCards = [
     key: "totalUsers",
     label: "Total users",
     icon: Users,
-    iconClassName: "bg-[#6842f5]/15 text-[#a78bfa]",
+    iconClassName: "bg-[#1824ff]/10 text-[#1824ff]",
   },
   {
     key: "totalStores",
     label: "Total stores",
     icon: Store,
-    iconClassName: "bg-sky-400/15 text-sky-300",
+    iconClassName: "bg-[#1824ff]/10 text-[#1824ff]",
   },
   {
     key: "totalRatings",
     label: "Submitted ratings",
     icon: Star,
-    iconClassName: "bg-amber-400/15 text-amber-300",
+    iconClassName: "bg-[#1824ff]/10 text-[#1824ff]",
   },
 ];
 
@@ -56,7 +56,7 @@ export default function AdminStats() {
 
   if (error) {
     return (
-      <p className="mt-8 rounded-xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm text-red-200">
+      <p className="mt-8 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
         {error}
       </p>
     );
@@ -67,15 +67,15 @@ export default function AdminStats() {
       {statCards.map(({ key, label, icon: Icon, iconClassName }) => (
         <Card
           key={key}
-          className="border-white/10 bg-[#17181c] text-white shadow-xl shadow-black/10 transition duration-200 hover:-translate-y-1 hover:border-[#6842f5]/50"
+          className="border-[#e1e5ec] bg-white text-[#172033] shadow-[0_8px_24px_rgba(31,43,68,0.06)] transition duration-200 hover:-translate-y-1 hover:border-[#1824ff]/40"
         >
           <CardContent className="flex items-center justify-between p-5">
             <div>
-              <p className="text-sm text-zinc-400">{label}</p>
+              <p className="text-sm text-[#6f788a]">{label}</p>
               <p className="mt-2 text-3xl font-bold tracking-tight">
                 {stats ? stats[key].toLocaleString() : "—"}
               </p>
-              <p className="mt-1 text-xs text-zinc-500">Across the platform</p>
+              <p className="mt-1 text-xs text-[#9aa2b1]">Across the platform</p>
             </div>
             <div className={`rounded-2xl p-3 ${iconClassName}`}>
               <Icon className="h-6 w-6" />
