@@ -92,18 +92,18 @@ export async function getAdminStats(req, res) {
 }
 
 export async function getStoreOwners(req, res) {
-  const { name = "", email = "", address = "" } = req.query;
+  const { name = "", email = "", address = "", role = "STORE_OWNER" } = req.query;
 
   try {
     const result = await pool.query(
       `SELECT id, name, email, address, role
        FROM users
-       WHERE role = 'STORE_OWNER'
-         AND name ILIKE $1
-         AND email ILIKE $2
-         AND address ILIKE $3
+       WHERE role ILIKE $1
+         AND name ILIKE $2
+         AND email ILIKE $3
+         AND address ILIKE $4
        ORDER BY name`,
-      [`%${name}%`, `%${email}%`, `%${address}%`],
+      [`%${role}%`, `%${name}%`, `%${email}%`, `%${address}%`],
     );
 
     return res.status(200).json({ stores: result.rows });

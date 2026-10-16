@@ -34,16 +34,44 @@ describe("Store owner retrieval", () => {
     const response = responseMock();
 
     await getStoreOwners(
-      { query: { name: "", email: "", address: "" } },
+      { query: { name: "", email: "", address: "", role: "STORE_OWNER" } },
       response,
     );
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual({ stores });
     expect(querySpy).toHaveBeenCalledWith(
-      expect.stringContaining("WHERE role = 'STORE_OWNER'"),
-      ["%%", "%%", "%%"],
+      expect.stringContaining("WHERE role ILIKE $1"),
+      ["%STORE_OWNER%", "%%", "%%", "%%"],
     );
+    querySpy.mockRestore();
+  });
+
+  test("applies name, email, address, and role filters", async () => {
+    const querySpy = vi
+      .spyOn(pool, "query")
+      .mockResolvedValueOnce({ rows: [] });
+    const response = responseMock();
+
+    await getStoreOwners(
+      {
+        query: {
+          name: "Market",
+          email: "market@example.com",
+          address: "Pune",
+          role: "STORE_OWNER",
+        },
+      },
+      response,
+    );
+
+    expect(response.statusCode).toBe(200);
+    expect(querySpy).toHaveBeenCalledWith(expect.any(String), [
+      "%STORE_OWNER%",
+      "%Market%",
+      "%market@example.com%",
+      "%Pune%",
+    ]);
     querySpy.mockRestore();
   });
 
