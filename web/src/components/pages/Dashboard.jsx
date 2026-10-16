@@ -306,6 +306,15 @@ export default function Dashboard({ role }) {
                       <p className="text-sm text-muted-foreground">Stores</p>
                     </div>
                   </div>
+                  <div className="flex items-center gap-3">
+                    <Star className="size-5 text-muted-foreground" />
+                    <div>
+                      <p className="text-2xl font-semibold">
+                        {adminStats?.totalRatings ?? "--"}
+                      </p>
+                      <p className="text-sm text-muted-foreground">Ratings</p>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             )}

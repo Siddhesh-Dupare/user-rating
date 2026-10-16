@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -14,6 +14,7 @@ export default function StoreOwnerRatings({ ownerEmail }) {
   const [store, setStore] = useState(null);
   const [ratings, setRatings] = useState([]);
   const [error, setError] = useState("");
+  const [sort, setSort] = useState({ field: "name", direction: "asc" });
 
   useEffect(() => {
     const controller = new AbortController();
@@ -42,6 +43,21 @@ export default function StoreOwnerRatings({ ownerEmail }) {
     return () => controller.abort();
   }, [ownerEmail]);
 
+  const sortedRatings = useMemo(() => [...ratings].sort((left, right) => {
+    const first = String(left[sort.field] ?? "");
+    const second = String(right[sort.field] ?? "");
+    return sort.direction === "asc"
+      ? first.localeCompare(second, undefined, { numeric: true })
+      : second.localeCompare(first, undefined, { numeric: true });
+  }), [ratings, sort]);
+
+  function toggleSort(field) {
+    setSort((current) => ({
+      field,
+      direction: current.field === field && current.direction === "asc" ? "desc" : "asc",
+    }));
+  }
+
   return (
     <Card className="ml-4 mt-8">
       <CardHeader>
@@ -55,15 +71,23 @@ export default function StoreOwnerRatings({ ownerEmail }) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Address</TableHead>
-              <TableHead>Rating</TableHead>
+              {[
+                ["name", "Name"],
+                ["email", "Email"],
+                ["address", "Address"],
+                ["rating", "Rating"],
+              ].map(([field, label]) => (
+                <TableHead key={field}>
+                  <button type="button" onClick={() => toggleSort(field)}>
+                    {label} {sort.field === field ? (sort.direction === "asc" ? "↑" : "↓") : ""}
+                  </button>
+                </TableHead>
+              ))}
             </TableRow>
           </TableHeader>
           <TableBody>
             {ratings.length ? (
-              ratings.map((rating) => (
+              sortedRatings.map((rating) => (
                 <TableRow key={`${rating.email}-${rating.rating}`}>
                   <TableCell>{rating.name}</TableCell>
                   <TableCell>{rating.email}</TableCell>

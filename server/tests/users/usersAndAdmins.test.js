@@ -54,7 +54,7 @@ describe("User and administrator retrieval", () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual({ users });
-    expect(querySpy).toHaveBeenCalledWith(expect.stringContaining("role IN ('USER', 'ADMIN')"), [
+    expect(querySpy).toHaveBeenCalledWith(expect.stringContaining("listed.role ILIKE $4"), [
       "%User%",
       "%example.com%",
       "%Pune%",

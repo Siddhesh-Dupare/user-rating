@@ -30,10 +30,11 @@ export default function StoresTable({ onBack }) {
     address: "",
   });
   const [error, setError] = useState("");
+  const [sort, setSort] = useState({ sortBy: "name", sortOrder: "asc" });
 
   useEffect(() => {
     const controller = new AbortController();
-    const query = new URLSearchParams(filters);
+    const query = new URLSearchParams({ ...filters, ...sort });
 
     async function loadStores() {
       try {
@@ -54,7 +55,15 @@ export default function StoresTable({ onBack }) {
 
     loadStores();
     return () => controller.abort();
-  }, [filters]);
+  }, [filters, sort]);
+
+  function toggleSort(sortBy) {
+    setSort((current) => ({
+      sortBy,
+      sortOrder:
+        current.sortBy === sortBy && current.sortOrder === "asc" ? "desc" : "asc",
+    }));
+  }
 
   function updateFilter(field, value) {
     setFilters((current) => ({ ...current, [field]: value }));
@@ -77,7 +86,11 @@ export default function StoresTable({ onBack }) {
           <TableHeader>
             <TableRow>
               {columns.map((column) => (
-                <TableHead key={column.accessorKey}>{column.header}</TableHead>
+                <TableHead key={column.accessorKey}>
+                  <button type="button" onClick={() => toggleSort(column.accessorKey)}>
+                    {column.header} {sort.sortBy === column.accessorKey ? (sort.sortOrder === "asc" ? "↑" : "↓") : ""}
+                  </button>
+                </TableHead>
               ))}
             </TableRow>
           </TableHeader>

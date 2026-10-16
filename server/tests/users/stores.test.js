@@ -41,7 +41,7 @@ describe("Store owner retrieval", () => {
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual({ stores });
     expect(querySpy).toHaveBeenCalledWith(
-      expect.stringContaining("WHERE role ILIKE $1"),
+      expect.stringContaining("WHERE store.role ILIKE $1"),
       ["%STORE_OWNER%", "%%", "%%", "%%"],
     );
     querySpy.mockRestore();

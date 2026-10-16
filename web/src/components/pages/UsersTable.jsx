@@ -17,6 +17,7 @@ const columns = [
   { accessorKey: "email", header: "Email" },
   { accessorKey: "address", header: "Address" },
   { accessorKey: "role", header: "Role" },
+  { accessorKey: "rating", header: "Rating" },
 ];
 
 export default function UsersTable({ onBack }) {
@@ -28,10 +29,11 @@ export default function UsersTable({ onBack }) {
     role: "",
   });
   const [error, setError] = useState("");
+  const [sort, setSort] = useState({ sortBy: "name", sortOrder: "asc" });
 
   useEffect(() => {
     const controller = new AbortController();
-    const query = new URLSearchParams(filters);
+    const query = new URLSearchParams({ ...filters, ...sort });
 
     async function loadUsers() {
       try {
@@ -54,7 +56,15 @@ export default function UsersTable({ onBack }) {
 
     loadUsers();
     return () => controller.abort();
-  }, [filters]);
+  }, [filters, sort]);
+
+  function toggleSort(sortBy) {
+    setSort((current) => ({
+      sortBy,
+      sortOrder:
+        current.sortBy === sortBy && current.sortOrder === "asc" ? "desc" : "asc",
+    }));
+  }
 
   function updateFilter(field, value) {
     setFilters((current) => ({ ...current, [field]: value }));
@@ -80,7 +90,11 @@ export default function UsersTable({ onBack }) {
           <TableHeader>
             <TableRow>
               {columns.map((column) => (
-                <TableHead key={column.accessorKey}>{column.header}</TableHead>
+                <TableHead key={column.accessorKey}>
+                  <button type="button" onClick={() => toggleSort(column.accessorKey)}>
+                    {column.header} {sort.sortBy === column.accessorKey ? (sort.sortOrder === "asc" ? "↑" : "↓") : ""}
+                  </button>
+                </TableHead>
               ))}
             </TableRow>
           </TableHeader>
@@ -90,7 +104,11 @@ export default function UsersTable({ onBack }) {
                 <TableRow key={listedUser.id}>
                   {columns.map((column) => (
                     <TableCell key={column.accessorKey}>
-                      {listedUser[column.accessorKey] ?? ""}
+                      {column.accessorKey === "rating"
+                        ? listedUser.role === "STORE_OWNER"
+                          ? listedUser.rating ?? "Not rated"
+                          : ""
+                        : listedUser[column.accessorKey] ?? ""}
                     </TableCell>
                   ))}
                 </TableRow>

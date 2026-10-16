@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,7 @@ export default function StoreListingsTable({ userEmail }) {
   const [ratingValues, setRatingValues] = useState({});
   const [ratingError, setRatingError] = useState({});
   const [error, setError] = useState("");
+  const [sort, setSort] = useState({ field: "name", direction: "asc" });
 
   useEffect(() => {
     const controller = new AbortController();
@@ -58,6 +59,21 @@ export default function StoreListingsTable({ userEmail }) {
         [storeId]: "Choose a whole-number rating from 1 to 5.",
       }));
       return;
+    }
+
+    const sortedStores = useMemo(() => [...stores].sort((left, right) => {
+      const first = String(left[sort.field] ?? "");
+      const second = String(right[sort.field] ?? "");
+      return sort.direction === "asc"
+        ? first.localeCompare(second, undefined, { numeric: true })
+        : second.localeCompare(first, undefined, { numeric: true });
+    }), [stores, sort]);
+
+    function toggleSort(field) {
+      setSort((current) => ({
+        field,
+        direction: current.field === field && current.direction === "asc" ? "desc" : "asc",
+      }));
     }
     setRatingError((current) => ({ ...current, [storeId]: "" }));
 
@@ -95,7 +111,11 @@ export default function StoreListingsTable({ userEmail }) {
           <TableHeader>
             <TableRow>
               {columns.map((column) => (
-                <TableHead key={column.accessorKey}>{column.header}</TableHead>
+                <TableHead key={column.accessorKey}>
+                  <button type="button" onClick={() => toggleSort(column.accessorKey)}>
+                    {column.header} {sort.field === column.accessorKey ? (sort.direction === "asc" ? "↑" : "↓") : ""}
+                  </button>
+                </TableHead>
               ))}
               <TableHead>User&apos;s Submitted Rating</TableHead>
               <TableHead>Rating Action</TableHead>
@@ -103,7 +123,7 @@ export default function StoreListingsTable({ userEmail }) {
           </TableHeader>
           <TableBody>
             {stores.length ? (
-              stores.map((store) => (
+              sortedStores.map((store) => (
                 <TableRow key={store.id}>
                   {columns.map((column) => (
                     <TableCell key={column.accessorKey}>

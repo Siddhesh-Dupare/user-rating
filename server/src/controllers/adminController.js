@@ -78,7 +78,8 @@ export async function getAdminStats(req, res) {
     const result = await pool.query(`
       SELECT
         COUNT(*) FILTER (WHERE role = 'USER')::int AS "totalUsers",
-        COUNT(*) FILTER (WHERE role = 'STORE_OWNER')::int AS "totalStores"
+        COUNT(*) FILTER (WHERE role = 'STORE_OWNER')::int AS "totalStores",
+        (SELECT COUNT(*)::int FROM ratings) AS "totalRatings"
       FROM users
     `);
 
@@ -92,17 +93,30 @@ export async function getAdminStats(req, res) {
 }
 
 export async function getStoreOwners(req, res) {
-  const { name = "", email = "", address = "", role = "STORE_OWNER" } = req.query;
+  const {
+    name = "",
+    email = "",
+    address = "",
+    role = "STORE_OWNER",
+    sortBy = "name",
+    sortOrder = "asc",
+  } = req.query;
+  const sortColumns = { name: "store.name", email: "store.email", address: "store.address", rating: "rating" };
+  const sortColumn = sortColumns[sortBy] || sortColumns.name;
+  const direction = sortOrder.toLowerCase() === "desc" ? "DESC" : "ASC";
 
   try {
     const result = await pool.query(
-      `SELECT id, name, email, address, role
-       FROM users
-       WHERE role ILIKE $1
-         AND name ILIKE $2
-         AND email ILIKE $3
-         AND address ILIKE $4
-       ORDER BY name`,
+      `SELECT store.id, store.name, store.email, store.address, store.role,
+              COALESCE(ROUND(AVG(ratings.rating), 2), 0) AS rating
+       FROM users store
+       LEFT JOIN ratings ON ratings.store_id = store.id
+       WHERE store.role ILIKE $1
+         AND store.name ILIKE $2
+         AND store.email ILIKE $3
+         AND store.address ILIKE $4
+       GROUP BY store.id
+       ORDER BY ${sortColumn} ${direction}`,
       [`%${role}%`, `%${name}%`, `%${email}%`, `%${address}%`],
     );
 
@@ -116,18 +130,33 @@ export async function getStoreOwners(req, res) {
 }
 
 export async function getUsersAndAdmins(req, res) {
-  const { name = "", email = "", address = "", role = "" } = req.query;
+  const {
+    name = "",
+    email = "",
+    address = "",
+    role = "",
+    sortBy = "name",
+    sortOrder = "asc",
+  } = req.query;
+  const sortColumns = { name: "listed.name", email: "listed.email", address: "listed.address", role: "listed.role", rating: "rating" };
+  const sortColumn = sortColumns[sortBy] || sortColumns.name;
+  const direction = sortOrder.toLowerCase() === "desc" ? "DESC" : "ASC";
 
   try {
     const result = await pool.query(
-      `SELECT id, name, email, address, role
-       FROM users
-       WHERE role IN ('USER', 'ADMIN')
-         AND name ILIKE $1
-         AND email ILIKE $2
-         AND address ILIKE $3
-         AND role ILIKE $4
-       ORDER BY name`,
+      `SELECT listed.id, listed.name, listed.email, listed.address, listed.role,
+              CASE WHEN listed.role = 'STORE_OWNER'
+                THEN COALESCE(ROUND(AVG(ratings.rating), 2), 0)
+                ELSE NULL
+              END AS rating
+       FROM users listed
+       LEFT JOIN ratings ON ratings.store_id = listed.id
+       WHERE listed.name ILIKE $1
+         AND listed.email ILIKE $2
+         AND listed.address ILIKE $3
+         AND listed.role ILIKE $4
+       GROUP BY listed.id
+       ORDER BY ${sortColumn} ${direction}`,
       [`%${name}%`, `%${email}%`, `%${address}%`, `%${role}%`],
     );
 
