@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { toast } from "@/components/ui/toast";
 
 const formSchema = z.object({
   email: z
@@ -50,8 +52,37 @@ export default function LoginForm() {
     },
   });
 
-  function onSubmit(data) {
-    console.log(data);
+  async function onSubmit(data) {
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+        }),
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || "Login failed");
+      }
+
+      toast.add({
+        type: "success",
+        title: "Login successful",
+        description: result.message,
+      });
+    } catch (error) {
+      console.error("Unable to connect to the server ", error);
+      toast.add({
+        type: "error",
+        title: "Login failed",
+        description: error.message || "Invalid email or password.",
+      });
+    }
   }
 
   return (
