@@ -148,8 +148,8 @@ export default function DirectoryTable({
           </p>
         )}
         <div className="p-3 sm:p-5">
-          <div className="overflow-hidden rounded-xl border border-white/10 bg-[#101114]/60">
-            <Table>
+          <div className="overflow-x-auto rounded-xl border border-white/10 bg-[#101114]/60">
+            <Table className="min-w-[760px]">
               <TableHeader>
                 <TableRow className="border-white/10 bg-white/[0.02] hover:bg-white/[0.02]">
                   {columns.map((column) => (
@@ -202,7 +202,9 @@ export default function DirectoryTable({
                               ? "max-w-40 truncate text-zinc-400 sm:max-w-56"
                               : column.key === "email"
                                 ? "text-zinc-300"
-                                : ""
+                                  : column.key === "role"
+                                    ? "whitespace-nowrap"
+                                    : ""
                           }`}
                         >
                           {renderCell(row[column.key], column, row)}

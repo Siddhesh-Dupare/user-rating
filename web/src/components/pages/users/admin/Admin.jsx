@@ -2,6 +2,7 @@
 import DashboardLayout from "../DashboardLayout";
 import WelcomeMessage from "../WelcomeMessage";
 import AdminStats from "./AdminStats";
+import AdminStoresTable from "./AdminStoresTable";
 import AdminUsersTable from "./AdminUsersTable";
 
 export default function Admin() {
@@ -10,7 +11,10 @@ export default function Admin() {
       <section className="p-6">
         <WelcomeMessage />
         <AdminStats />
-        <AdminUsersTable />
+        <div className="grid gap-6 md:grid-cols-2">
+          <AdminUsersTable />
+          <AdminStoresTable />
+        </div>
       </section>
     </DashboardLayout>
   );
