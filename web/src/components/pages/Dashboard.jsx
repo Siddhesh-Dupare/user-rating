@@ -8,6 +8,9 @@ import {
   Users,
   Store,
 } from "lucide-react";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -27,6 +30,10 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import { clearCredentials } from "@/store/authSlice";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { toast } from "@/components/ui/toast";
 import CreateAdmin from "./CreateAdmin";
 import CreateUser from "./CreateUser";
 import CreateStore from "./CreateStore";
@@ -43,6 +50,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 
 export default function Dashboard({ role }) {
@@ -55,12 +63,46 @@ export default function Dashboard({ role }) {
   const [isCreateStoreOpen, setIsCreateStoreOpen] = useState(false);
   const [isStoresOpen, setIsStoresOpen] = useState(false);
   const [isUsersOpen, setIsUsersOpen] = useState(false);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const [adminStats, setAdminStats] = useState(null);
   const dashboardRole = user?.role || role;
   const roleLabel = dashboardRole
     ? dashboardRole.charAt(0) + dashboardRole.slice(1).toLowerCase()
     : "User";
   const firstName = user?.name?.trim().split(/\s+/)[0] || roleLabel;
+  const passwordForm = useForm({
+    resolver: zodResolver(
+      z.object({
+        currentPassword: z.string().min(1, "Current password is required"),
+        newPassword: z
+          .string()
+          .min(8, "Password must be at least 8 characters")
+          .max(16, "Password must be no more than 16 characters")
+          .regex(/[A-Z]/, "Password must include an uppercase letter")
+          .regex(/[a-z]/, "Password must include a lowercase letter")
+          .regex(/[0-9]/, "Password must include a number")
+          .regex(/[^A-Za-z0-9]/, "Password must include a special character"),
+      }),
+    ),
+    defaultValues: { currentPassword: "", newPassword: "" },
+  });
+
+  async function handleChangePassword(data) {
+    try {
+      const response = await fetch("http://localhost:5000/api/user/password", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...data, email: user?.email }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || "Unable to change password");
+      toast.add({ type: "success", title: "Password changed", description: result.message });
+      passwordForm.reset();
+      setIsChangePasswordOpen(false);
+    } catch (error) {
+      toast.add({ type: "error", title: "Password change failed", description: error.message });
+    }
+  }
 
   useEffect(() => {
     if (dashboardRole !== "ADMIN") {
@@ -163,6 +205,18 @@ export default function Dashboard({ role }) {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   type="button"
+                  tooltip="Change password"
+                  onClick={() => setIsChangePasswordOpen(true)}
+                >
+                  <Settings />
+                  <span>Change password</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )}
+            {isProfileOpen && (
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  type="button"
                   tooltip="Log out"
                   onClick={handleLogout}
                   className="text-destructive hover:text-destructive"
@@ -255,6 +309,44 @@ export default function Dashboard({ role }) {
           </>
         )}
       </main>
+      {isChangePasswordOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Change password"
+        >
+          <Card className="w-full max-w-md bg-background/80 shadow-2xl backdrop-blur-md">
+            <CardHeader>
+              <CardTitle>Change password</CardTitle>
+            </CardHeader>
+            <form onSubmit={passwordForm.handleSubmit(handleChangePassword)} noValidate>
+              <CardContent className="space-y-4">
+                <Field data-invalid={Boolean(passwordForm.formState.errors.currentPassword)}>
+                  <FieldLabel htmlFor="current-password">Enter current password</FieldLabel>
+                  <Input id="current-password" type="password" {...passwordForm.register("currentPassword")} />
+                  <FieldError errors={[passwordForm.formState.errors.currentPassword]} />
+                </Field>
+                <Field data-invalid={Boolean(passwordForm.formState.errors.newPassword)}>
+                  <FieldLabel htmlFor="new-password">Set new password</FieldLabel>
+                  <Input id="new-password" type="password" {...passwordForm.register("newPassword")} />
+                  <FieldError errors={[passwordForm.formState.errors.newPassword]} />
+                </Field>
+              </CardContent>
+              <CardFooter className="justify-end gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsChangePasswordOpen(false)}
+              >
+                Cancel
+              </Button>
+                <Button type="submit">Change password</Button>
+              </CardFooter>
+            </form>
+          </Card>
+        </div>
+      )}
       {isCreateAdminOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"

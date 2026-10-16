@@ -64,3 +64,43 @@ export async function createUser(req, res) {
     return res.status(500).json({ message: "Unable to create user" });
   }
 }
+
+export async function changePassword(req, res) {
+  const { email, currentPassword, newPassword } = req.body;
+
+  if (
+    typeof newPassword !== "string" ||
+    newPassword.length < 8 ||
+    newPassword.length > 16 ||
+    !/[A-Z]/.test(newPassword) ||
+    !/[a-z]/.test(newPassword) ||
+    !/[0-9]/.test(newPassword) ||
+    !/[^A-Za-z0-9]/.test(newPassword)
+  ) {
+    return res.status(400).json({
+      message:
+        "New password must be 8-16 characters and include uppercase, lowercase, number, and special character",
+    });
+  }
+
+  try {
+    const userResult = await pool.query(
+      "SELECT password FROM users WHERE email = $1",
+      [email],
+    );
+
+    if (!userResult.rows.length || userResult.rows[0].password !== currentPassword) {
+      return res.status(401).json({ message: "Current password is incorrect" });
+    }
+
+    await pool.query("UPDATE users SET password = $1 WHERE email = $2", [
+      newPassword,
+      email,
+    ]);
+
+    return res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    console.error("Password change failed", error);
+    return res.status(500).json({ message: "Unable to change password" });
+  }
+}
