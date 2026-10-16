@@ -1,7 +1,7 @@
 import CardLeft from "../CardLeft";
 import CardRight from "../CardRight";
 import LoginForm from "./LoginForm";
-import { AuthLayout } from "../AuthLayout";
+import AuthLayout from "../AuthLayout";
 
 export default function LoginMain() {
   return (
