@@ -12,6 +12,8 @@ export default function ProfileHoverCard() {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const canChangePassword =
+    user?.role === "USER" || user?.role === "STORE_OWNER";
 
   function handleLogout() {
     dispatch(clearCredentials());
@@ -49,13 +51,15 @@ export default function ProfileHoverCard() {
           </div>
         </div>
         <div className="space-y-1 p-2">
-          <button
-            type="button"
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-[#4f596b] transition hover:bg-[#1824ff] hover:text-white"
-          >
-            <KeyRound className="h-4 w-4" />
-            <span>Change password</span>
-          </button>
+          {canChangePassword && (
+            <button
+              type="button"
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-[#4f596b] transition hover:bg-[#1824ff] hover:text-white"
+            >
+              <KeyRound className="h-4 w-4" />
+              <span>Change password</span>
+            </button>
+          )}
           <button
             type="button"
             onClick={handleLogout}
