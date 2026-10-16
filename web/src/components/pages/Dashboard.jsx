@@ -3,9 +3,8 @@ import {
   Plus,
   LayoutDashboard,
   LogOut,
-  Settings,
-  Star,
   Users,
+  Star,
   Store,
 } from "lucide-react";
 import { z } from "zod";
@@ -154,14 +153,8 @@ export default function Dashboard({ role }) {
                     <LayoutDashboard />
                     <span>Dashboard</span>
                   </SidebarMenuButton>
-                </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton tooltip="Ratings">
-                    <Star />
-                    <span>Ratings</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                {dashboardRole === "ADMIN" && (
+                  </SidebarMenuItem>
+                  {dashboardRole === "ADMIN" && (
                   <SidebarMenuItem>
                     <SidebarMenuButton
                       isActive={isUsersOpen}
@@ -191,12 +184,6 @@ export default function Dashboard({ role }) {
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )}
-                <SidebarMenuItem>
-                  <SidebarMenuButton tooltip="Settings">
-                    <Settings />
-                    <span>Settings</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
