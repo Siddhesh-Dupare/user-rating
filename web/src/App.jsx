@@ -1,4 +1,5 @@
 import LoginForm from "./components/LoginForm";
+import SignupForm from "./components/SignupForm";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "./components/pages/Dashboard";
 import { Toaster } from "./components/ui/toast";
@@ -9,6 +10,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginForm />} />
+          <Route path="/signup" element={<SignupForm />} />
           <Route
             path="/admin/dashboard"
             element={<Dashboard role="ADMIN" />}

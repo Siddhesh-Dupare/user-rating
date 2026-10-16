@@ -19,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { toast } from "@/components/ui/toast";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "@/store/authSlice";
@@ -205,12 +206,12 @@ export default function LoginForm() {
           <CardFooter className="justify-center rounded-none border-t border-slate-200 bg-slate-50/50 px-8 py-6">
             <p className="text-center text-sm text-slate-600">
               Don't have an account?{" "}
-              <a
-                href="#"
+              <Link
+                to="/signup"
                 className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
               >
                 Create one
-              </a>
+              </Link>
             </p>
           </CardFooter>
         </Card>
