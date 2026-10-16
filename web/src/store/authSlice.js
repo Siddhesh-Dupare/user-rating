@@ -1,11 +1,22 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const storedUser = localStorage.getItem("authUser");
+function getStoredUser() {
+  try {
+    const storedUser = localStorage.getItem("authUser");
+    return storedUser ? JSON.parse(storedUser) : null;
+  } catch (error) {
+    console.error("Unable to restore authenticated user", error);
+    localStorage.removeItem("authUser");
+    return null;
+  }
+}
+
+const storedUser = getStoredUser();
 
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: storedUser ? JSON.parse(storedUser) : null,
+    user: storedUser,
     isAuthenticated: Boolean(storedUser),
   },
   reducers: {
