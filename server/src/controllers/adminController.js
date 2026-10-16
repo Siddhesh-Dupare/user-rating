@@ -72,3 +72,21 @@ export async function createAdmin(req, res) {
     });
   }
 }
+
+export async function getAdminStats(req, res) {
+  try {
+    const result = await pool.query(`
+      SELECT
+        COUNT(*) FILTER (WHERE role = 'USER')::int AS "totalUsers",
+        COUNT(*) FILTER (WHERE role = 'STORE_OWNER')::int AS "totalStores"
+      FROM users
+    `);
+
+    return res.status(200).json(result.rows[0]);
+  } catch (error) {
+    console.error("Admin statistics retrieval failed", error);
+    return res.status(500).json({
+      message: "Unable to retrieve administrator statistics",
+    });
+  }
+}

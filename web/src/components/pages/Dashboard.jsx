@@ -6,8 +6,9 @@ import {
   Settings,
   Star,
   Users,
+  Store,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -35,6 +36,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function Dashboard({ role }) {
   const user = useSelector((state) => state.auth.user);
@@ -44,11 +51,32 @@ export default function Dashboard({ role }) {
   const [isCreateAdminOpen, setIsCreateAdminOpen] = useState(false);
   const [isCreateUserOpen, setIsCreateUserOpen] = useState(false);
   const [isCreateStoreOpen, setIsCreateStoreOpen] = useState(false);
+  const [adminStats, setAdminStats] = useState(null);
   const dashboardRole = user?.role || role;
   const roleLabel = dashboardRole
     ? dashboardRole.charAt(0) + dashboardRole.slice(1).toLowerCase()
     : "User";
   const firstName = user?.name?.trim().split(/\s+/)[0] || roleLabel;
+
+  useEffect(() => {
+    if (dashboardRole !== "ADMIN") {
+      return;
+    }
+
+    async function loadAdminStats() {
+      try {
+        const response = await fetch("http://localhost:5000/api/admin/stats");
+        if (!response.ok) {
+          throw new Error("Unable to load dashboard statistics");
+        }
+        setAdminStats(await response.json());
+      } catch (error) {
+        console.error("Unable to load administrator statistics", error);
+      }
+    }
+
+    loadAdminStats();
+  }, [dashboardRole]);
 
   function handleLogout() {
     dispatch(clearCredentials());
@@ -156,6 +184,33 @@ export default function Dashboard({ role }) {
             </DropdownMenu>
           )}
         </div>
+        {dashboardRole === "ADMIN" && (
+          <Card className="ml-4 mt-8 w-full max-w-sm">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Platform Overview</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-2 gap-4">
+              <div className="flex items-center gap-3">
+                <Users className="size-5 text-muted-foreground" />
+                <div>
+                  <p className="text-2xl font-semibold">
+                    {adminStats?.totalUsers ?? "--"}
+                  </p>
+                  <p className="text-sm text-muted-foreground">Users</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Store className="size-5 text-muted-foreground" />
+                <div>
+                  <p className="text-2xl font-semibold">
+                    {adminStats?.totalStores ?? "--"}
+                  </p>
+                  <p className="text-sm text-muted-foreground">Stores</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </main>
       {isCreateAdminOpen && (
         <div
