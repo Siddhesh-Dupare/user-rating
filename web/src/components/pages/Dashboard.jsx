@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/sidebar";
 import { clearCredentials } from "@/store/authSlice";
 import CreateAdmin from "./CreateAdmin";
+import CreateUser from "./CreateUser";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,6 +41,7 @@ export default function Dashboard({ role }) {
   const navigate = useNavigate();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isCreateAdminOpen, setIsCreateAdminOpen] = useState(false);
+  const [isCreateUserOpen, setIsCreateUserOpen] = useState(false);
   const dashboardRole = user?.role || role;
   const roleLabel = dashboardRole
     ? dashboardRole.charAt(0) + dashboardRole.slice(1).toLowerCase()
@@ -137,7 +139,9 @@ export default function Dashboard({ role }) {
                 Create
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem>Create User</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsCreateUserOpen(true)}>
+                  Create User
+                </DropdownMenuItem>
                 <DropdownMenuItem>Create Owner</DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => setIsCreateAdminOpen(true)}
@@ -157,6 +161,16 @@ export default function Dashboard({ role }) {
           aria-label="Create Admin"
         >
           <CreateAdmin onCancel={() => setIsCreateAdminOpen(false)} />
+        </div>
+      )}
+      {isCreateUserOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Create User"
+        >
+          <CreateUser onCancel={() => setIsCreateUserOpen(false)} />
         </div>
       )}
     </SidebarProvider>

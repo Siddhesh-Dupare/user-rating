@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import authRouter from "./routes/authRoutes.js";
+import userRouter from "./routes/userRoutes.js";
 import adminRouter from "./routes/adminRoutes.js";
 
 const server = express();
@@ -13,6 +14,7 @@ server.use(
   }),
 );
 server.use("/api/auth", authRouter);
+server.use("/api/user", userRouter);
 server.use("/api/admin", adminRouter);
 
 server.listen(PORT, () => {
