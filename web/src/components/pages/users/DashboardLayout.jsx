@@ -5,10 +5,9 @@ import {
   SidebarHeader,
   SidebarContent,
 } from "@/components/ui/sidebar";
-import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
 
-import { CircleUserRound } from "lucide-react";
 import SidebarNavigation from "./SidebarNavigation";
+import ProfileHoverCard from "./ProfileHoverCard";
 
 export default function DashboardLayout({ children }) {
   return (
@@ -25,20 +24,7 @@ export default function DashboardLayout({ children }) {
       <main className="min-h-svh flex-1 bg-[#101114] text-zinc-100">
         <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
           <SidebarTrigger className="text-zinc-300 hover:bg-[#202126] hover:text-white" />
-          <HoverCard>
-            <HoverCardTrigger delay={100} closeDelay={200}>
-              <button
-                type="button"
-                aria-label="Open profile"
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-[#6842f5] text-white ring-2 ring-[#6842f5]/30 transition hover:ring-[#6842f5]/70"
-              >
-                <CircleUserRound className="h-6 w-6" />
-              </button>
-            </HoverCardTrigger>
-            <HoverCardContent>
-              Hello hover card
-            </HoverCardContent>
-          </HoverCard>
+          <ProfileHoverCard />
         </div>
         {children}
       </main>
