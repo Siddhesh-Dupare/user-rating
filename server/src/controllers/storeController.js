@@ -64,3 +64,31 @@ export async function createStore(req, res) {
     return res.status(500).json({ message: "Unable to create store owner" });
   }
 }
+
+export async function getStores(req, res) {
+  const searchTerms = String(req.query?.search || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  try {
+    const searchConditions = searchTerms.map(
+      (_, index) => `(name ILIKE $${index + 1} OR address ILIKE $${index + 1})`,
+    );
+    const values = searchTerms.map((term) => `%${term}%`);
+
+    const result = await pool.query(
+      `SELECT id, name, email, address, NULL::numeric AS rating
+       FROM users
+       WHERE role = 'STORE_OWNER'
+       ${searchConditions.length ? `AND ${searchConditions.join(" AND ")}` : ""}
+       ORDER BY name`,
+      values,
+    );
+
+    return res.status(200).json({ stores: result.rows });
+  } catch (error) {
+    console.error("Store retrieval failed", error);
+    return res.status(500).json({ message: "Unable to retrieve stores" });
+  }
+}

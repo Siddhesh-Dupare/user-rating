@@ -39,6 +39,7 @@ import CreateUser from "./CreateUser";
 import CreateStore from "./CreateStore";
 import StoresTable from "./StoresTable";
 import UsersTable from "./UsersTable";
+import StoreListingsTable from "./StoreListingsTable";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -306,6 +307,7 @@ export default function Dashboard({ role }) {
                 </CardContent>
               </Card>
             )}
+            {dashboardRole === "USER" && <StoreListingsTable />}
           </>
         )}
       </main>
