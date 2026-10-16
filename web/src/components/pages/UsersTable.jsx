@@ -62,7 +62,9 @@ export default function UsersTable({ onBack }) {
     setSort((current) => ({
       sortBy,
       sortOrder:
-        current.sortBy === sortBy && current.sortOrder === "asc" ? "desc" : "asc",
+        current.sortBy === sortBy && current.sortOrder === "asc"
+          ? "desc"
+          : "asc",
     }));
   }
 
@@ -80,10 +82,26 @@ export default function UsersTable({ onBack }) {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid gap-3 md:grid-cols-4">
-          <Input placeholder="Filter by name" value={filters.name} onChange={(event) => updateFilter("name", event.target.value)} />
-          <Input placeholder="Filter by email" value={filters.email} onChange={(event) => updateFilter("email", event.target.value)} />
-          <Input placeholder="Filter by address" value={filters.address} onChange={(event) => updateFilter("address", event.target.value)} />
-          <Input placeholder="Filter by role" value={filters.role} onChange={(event) => updateFilter("role", event.target.value)} />
+          <Input
+            placeholder="Filter by name"
+            value={filters.name}
+            onChange={(event) => updateFilter("name", event.target.value)}
+          />
+          <Input
+            placeholder="Filter by email"
+            value={filters.email}
+            onChange={(event) => updateFilter("email", event.target.value)}
+          />
+          <Input
+            placeholder="Filter by address"
+            value={filters.address}
+            onChange={(event) => updateFilter("address", event.target.value)}
+          />
+          <Input
+            placeholder="Filter by role"
+            value={filters.role}
+            onChange={(event) => updateFilter("role", event.target.value)}
+          />
         </div>
         {error && <p className="text-sm text-destructive">{error}</p>}
         <Table>
@@ -91,8 +109,16 @@ export default function UsersTable({ onBack }) {
             <TableRow>
               {columns.map((column) => (
                 <TableHead key={column.accessorKey}>
-                  <button type="button" onClick={() => toggleSort(column.accessorKey)}>
-                    {column.header} {sort.sortBy === column.accessorKey ? (sort.sortOrder === "asc" ? "↑" : "↓") : ""}
+                  <button
+                    type="button"
+                    onClick={() => toggleSort(column.accessorKey)}
+                  >
+                    {column.header}{" "}
+                    {sort.sortBy === column.accessorKey
+                      ? sort.sortOrder === "asc"
+                        ? "↑"
+                        : "↓"
+                      : ""}
                   </button>
                 </TableHead>
               ))}
@@ -106,16 +132,19 @@ export default function UsersTable({ onBack }) {
                     <TableCell key={column.accessorKey}>
                       {column.accessorKey === "rating"
                         ? listedUser.role === "STORE_OWNER"
-                          ? listedUser.rating ?? "Not rated"
+                          ? (listedUser.rating ?? "Not rated")
                           : ""
-                        : listedUser[column.accessorKey] ?? ""}
+                        : (listedUser[column.accessorKey] ?? "")}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   No users found.
                 </TableCell>
               </TableRow>

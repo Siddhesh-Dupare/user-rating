@@ -32,9 +32,12 @@ export default function StoreListingsTable({ userEmail }) {
     async function loadStores() {
       try {
         const query = new URLSearchParams({ search, userEmail });
-        const response = await fetch(`http://localhost:5000/api/store?${query}`, {
-          signal: controller.signal,
-        });
+        const response = await fetch(
+          `http://localhost:5000/api/store?${query}`,
+          {
+            signal: controller.signal,
+          },
+        );
         const result = await response.json();
         if (!response.ok) {
           throw new Error(result.message || "Unable to load stores");
@@ -61,18 +64,25 @@ export default function StoreListingsTable({ userEmail }) {
       return;
     }
 
-    const sortedStores = useMemo(() => [...stores].sort((left, right) => {
-      const first = String(left[sort.field] ?? "");
-      const second = String(right[sort.field] ?? "");
-      return sort.direction === "asc"
-        ? first.localeCompare(second, undefined, { numeric: true })
-        : second.localeCompare(first, undefined, { numeric: true });
-    }), [stores, sort]);
+    const sortedStores = useMemo(
+      () =>
+        [...stores].sort((left, right) => {
+          const first = String(left[sort.field] ?? "");
+          const second = String(right[sort.field] ?? "");
+          return sort.direction === "asc"
+            ? first.localeCompare(second, undefined, { numeric: true })
+            : second.localeCompare(first, undefined, { numeric: true });
+        }),
+      [stores, sort],
+    );
 
     function toggleSort(field) {
       setSort((current) => ({
         field,
-        direction: current.field === field && current.direction === "asc" ? "desc" : "asc",
+        direction:
+          current.field === field && current.direction === "asc"
+            ? "desc"
+            : "asc",
       }));
     }
     setRatingError((current) => ({ ...current, [storeId]: "" }));
@@ -112,8 +122,16 @@ export default function StoreListingsTable({ userEmail }) {
             <TableRow>
               {columns.map((column) => (
                 <TableHead key={column.accessorKey}>
-                  <button type="button" onClick={() => toggleSort(column.accessorKey)}>
-                    {column.header} {sort.field === column.accessorKey ? (sort.direction === "asc" ? "↑" : "↓") : ""}
+                  <button
+                    type="button"
+                    onClick={() => toggleSort(column.accessorKey)}
+                  >
+                    {column.header}{" "}
+                    {sort.field === column.accessorKey
+                      ? sort.direction === "asc"
+                        ? "↑"
+                        : "↓"
+                      : ""}
                   </button>
                 </TableHead>
               ))}
@@ -129,7 +147,7 @@ export default function StoreListingsTable({ userEmail }) {
                     <TableCell key={column.accessorKey}>
                       {column.accessorKey === "overallRating"
                         ? store.overallRating || "Not rated"
-                        : store[column.accessorKey] ?? ""}
+                        : (store[column.accessorKey] ?? "")}
                     </TableCell>
                   ))}
                   <TableCell>{store.userRating ?? "Not rated"}</TableCell>
@@ -142,7 +160,9 @@ export default function StoreListingsTable({ userEmail }) {
                           min="1"
                           max="5"
                           step="1"
-                          value={ratingValues[store.id] ?? store.userRating ?? ""}
+                          value={
+                            ratingValues[store.id] ?? store.userRating ?? ""
+                          }
                           onChange={(event) =>
                             setRatingValues((current) => ({
                               ...current,
@@ -151,7 +171,11 @@ export default function StoreListingsTable({ userEmail }) {
                           }
                           aria-label={`Rating for ${store.name}`}
                         />
-                        <Button type="button" size="sm" onClick={() => submitRating(store.id)}>
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => submitRating(store.id)}
+                        >
                           {store.userRating ? "Modify" : "Submit"}
                         </Button>
                       </div>
@@ -166,7 +190,10 @@ export default function StoreListingsTable({ userEmail }) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length + 2} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length + 2}
+                  className="h-24 text-center"
+                >
                   No stores found.
                 </TableCell>
               </TableRow>

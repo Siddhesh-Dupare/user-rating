@@ -96,12 +96,21 @@ export default function Dashboard({ role }) {
         body: JSON.stringify({ ...data, email: user?.email, role: user?.role }),
       });
       const result = await response.json();
-      if (!response.ok) throw new Error(result.message || "Unable to change password");
-      toast.add({ type: "success", title: "Password changed", description: result.message });
+      if (!response.ok)
+        throw new Error(result.message || "Unable to change password");
+      toast.add({
+        type: "success",
+        title: "Password changed",
+        description: result.message,
+      });
       passwordForm.reset();
       setIsChangePasswordOpen(false);
     } catch (error) {
-      toast.add({ type: "error", title: "Password change failed", description: error.message });
+      toast.add({
+        type: "error",
+        title: "Password change failed",
+        description: error.message,
+      });
     }
   }
 
@@ -153,8 +162,8 @@ export default function Dashboard({ role }) {
                     <LayoutDashboard />
                     <span>Dashboard</span>
                   </SidebarMenuButton>
-                  </SidebarMenuItem>
-                  {dashboardRole === "ADMIN" && (
+                </SidebarMenuItem>
+                {dashboardRole === "ADMIN" && (
                   <SidebarMenuItem>
                     <SidebarMenuButton
                       isActive={isUsersOpen}
@@ -192,17 +201,17 @@ export default function Dashboard({ role }) {
           <SidebarMenu>
             {isProfileOpen &&
               (dashboardRole === "USER" || dashboardRole === "STORE_OWNER") && (
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  type="button"
-                  tooltip="Change password"
-                  onClick={() => setIsChangePasswordOpen(true)}
-                >
-                  <Settings />
-                  <span>Change password</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            )}
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    type="button"
+                    tooltip="Change password"
+                    onClick={() => setIsChangePasswordOpen(true)}
+                  >
+                    <Settings />
+                    <span>Change password</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
             {isProfileOpen && (
               <SidebarMenuItem>
                 <SidebarMenuButton
@@ -257,7 +266,9 @@ export default function Dashboard({ role }) {
                     <DropdownMenuItem onClick={() => setIsCreateUserOpen(true)}>
                       Create User
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setIsCreateStoreOpen(true)}>
+                    <DropdownMenuItem
+                      onClick={() => setIsCreateStoreOpen(true)}
+                    >
                       Create Store
                     </DropdownMenuItem>
                     <DropdownMenuItem
@@ -325,27 +336,54 @@ export default function Dashboard({ role }) {
             <CardHeader>
               <CardTitle>Change password</CardTitle>
             </CardHeader>
-            <form onSubmit={passwordForm.handleSubmit(handleChangePassword)} noValidate>
+            <form
+              onSubmit={passwordForm.handleSubmit(handleChangePassword)}
+              noValidate
+            >
               <CardContent className="space-y-4">
-                <Field data-invalid={Boolean(passwordForm.formState.errors.currentPassword)}>
-                  <FieldLabel htmlFor="current-password">Enter current password</FieldLabel>
-                  <Input id="current-password" type="password" {...passwordForm.register("currentPassword")} />
-                  <FieldError errors={[passwordForm.formState.errors.currentPassword]} />
+                <Field
+                  data-invalid={Boolean(
+                    passwordForm.formState.errors.currentPassword,
+                  )}
+                >
+                  <FieldLabel htmlFor="current-password">
+                    Enter current password
+                  </FieldLabel>
+                  <Input
+                    id="current-password"
+                    type="password"
+                    {...passwordForm.register("currentPassword")}
+                  />
+                  <FieldError
+                    errors={[passwordForm.formState.errors.currentPassword]}
+                  />
                 </Field>
-                <Field data-invalid={Boolean(passwordForm.formState.errors.newPassword)}>
-                  <FieldLabel htmlFor="new-password">Set new password</FieldLabel>
-                  <Input id="new-password" type="password" {...passwordForm.register("newPassword")} />
-                  <FieldError errors={[passwordForm.formState.errors.newPassword]} />
+                <Field
+                  data-invalid={Boolean(
+                    passwordForm.formState.errors.newPassword,
+                  )}
+                >
+                  <FieldLabel htmlFor="new-password">
+                    Set new password
+                  </FieldLabel>
+                  <Input
+                    id="new-password"
+                    type="password"
+                    {...passwordForm.register("newPassword")}
+                  />
+                  <FieldError
+                    errors={[passwordForm.formState.errors.newPassword]}
+                  />
                 </Field>
               </CardContent>
               <CardFooter className="justify-end gap-3">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setIsChangePasswordOpen(false)}
-              >
-                Cancel
-              </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsChangePasswordOpen(false)}
+                >
+                  Cancel
+                </Button>
                 <Button type="submit">Change password</Button>
               </CardFooter>
             </form>

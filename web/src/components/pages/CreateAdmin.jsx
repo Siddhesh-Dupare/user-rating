@@ -2,12 +2,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Field,
   FieldError,
@@ -78,75 +73,71 @@ export default function CreateAdmin({ onCancel }) {
 
   return (
     <Card className="w-full max-w-lg">
-        <CardHeader>
-          <CardTitle>Create Admin</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6"
-            noValidate
-          >
-            <FieldGroup>
-              <Field data-invalid={Boolean(form.formState.errors.name)}>
-                <FieldLabel htmlFor="admin-name">Name</FieldLabel>
-                <Input
-                  id="admin-name"
-                  {...form.register("name")}
-                  aria-invalid={Boolean(form.formState.errors.name)}
-                  placeholder="Enter admin name"
-                />
-                <FieldError errors={[form.formState.errors.name]} />
-              </Field>
+      <CardHeader>
+        <CardTitle>Create Admin</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-6"
+          noValidate
+        >
+          <FieldGroup>
+            <Field data-invalid={Boolean(form.formState.errors.name)}>
+              <FieldLabel htmlFor="admin-name">Name</FieldLabel>
+              <Input
+                id="admin-name"
+                {...form.register("name")}
+                aria-invalid={Boolean(form.formState.errors.name)}
+                placeholder="Enter admin name"
+              />
+              <FieldError errors={[form.formState.errors.name]} />
+            </Field>
 
-              <Field data-invalid={Boolean(form.formState.errors.email)}>
-                <FieldLabel htmlFor="admin-email">Email</FieldLabel>
-                <Input
-                  id="admin-email"
-                  type="email"
-                  {...form.register("email")}
-                  aria-invalid={Boolean(form.formState.errors.email)}
-                  placeholder="admin@example.com"
-                />
-                <FieldError errors={[form.formState.errors.email]} />
-              </Field>
+            <Field data-invalid={Boolean(form.formState.errors.email)}>
+              <FieldLabel htmlFor="admin-email">Email</FieldLabel>
+              <Input
+                id="admin-email"
+                type="email"
+                {...form.register("email")}
+                aria-invalid={Boolean(form.formState.errors.email)}
+                placeholder="admin@example.com"
+              />
+              <FieldError errors={[form.formState.errors.email]} />
+            </Field>
 
-              <Field data-invalid={Boolean(form.formState.errors.password)}>
-                <FieldLabel htmlFor="admin-password">Password</FieldLabel>
-                <Input
-                  id="admin-password"
-                  type="password"
-                  {...form.register("password")}
-                  aria-invalid={Boolean(form.formState.errors.password)}
-                  placeholder="Enter password"
-                />
-                <FieldError errors={[form.formState.errors.password]} />
-              </Field>
+            <Field data-invalid={Boolean(form.formState.errors.password)}>
+              <FieldLabel htmlFor="admin-password">Password</FieldLabel>
+              <Input
+                id="admin-password"
+                type="password"
+                {...form.register("password")}
+                aria-invalid={Boolean(form.formState.errors.password)}
+                placeholder="Enter password"
+              />
+              <FieldError errors={[form.formState.errors.password]} />
+            </Field>
 
-              <Field data-invalid={Boolean(form.formState.errors.address)}>
-                <FieldLabel htmlFor="admin-address">Address</FieldLabel>
-                <Input
-                  id="admin-address"
-                  {...form.register("address")}
-                  aria-invalid={Boolean(form.formState.errors.address)}
-                  placeholder="Enter address"
-                />
-                <FieldError errors={[form.formState.errors.address]} />
-              </Field>
-            </FieldGroup>
+            <Field data-invalid={Boolean(form.formState.errors.address)}>
+              <FieldLabel htmlFor="admin-address">Address</FieldLabel>
+              <Input
+                id="admin-address"
+                {...form.register("address")}
+                aria-invalid={Boolean(form.formState.errors.address)}
+                placeholder="Enter address"
+              />
+              <FieldError errors={[form.formState.errors.address]} />
+            </Field>
+          </FieldGroup>
 
-            <div className="flex justify-end gap-3">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onCancel}
-              >
-                Cancel
-              </Button>
-              <Button type="submit">Create</Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+          <div className="flex justify-end gap-3">
+            <Button type="button" variant="outline" onClick={onCancel}>
+              Cancel
+            </Button>
+            <Button type="submit">Create</Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 }

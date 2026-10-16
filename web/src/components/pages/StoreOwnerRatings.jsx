@@ -43,18 +43,23 @@ export default function StoreOwnerRatings({ ownerEmail }) {
     return () => controller.abort();
   }, [ownerEmail]);
 
-  const sortedRatings = useMemo(() => [...ratings].sort((left, right) => {
-    const first = String(left[sort.field] ?? "");
-    const second = String(right[sort.field] ?? "");
-    return sort.direction === "asc"
-      ? first.localeCompare(second, undefined, { numeric: true })
-      : second.localeCompare(first, undefined, { numeric: true });
-  }), [ratings, sort]);
+  const sortedRatings = useMemo(
+    () =>
+      [...ratings].sort((left, right) => {
+        const first = String(left[sort.field] ?? "");
+        const second = String(right[sort.field] ?? "");
+        return sort.direction === "asc"
+          ? first.localeCompare(second, undefined, { numeric: true })
+          : second.localeCompare(first, undefined, { numeric: true });
+      }),
+    [ratings, sort],
+  );
 
   function toggleSort(field) {
     setSort((current) => ({
       field,
-      direction: current.field === field && current.direction === "asc" ? "desc" : "asc",
+      direction:
+        current.field === field && current.direction === "asc" ? "desc" : "asc",
     }));
   }
 
@@ -79,7 +84,12 @@ export default function StoreOwnerRatings({ ownerEmail }) {
               ].map(([field, label]) => (
                 <TableHead key={field}>
                   <button type="button" onClick={() => toggleSort(field)}>
-                    {label} {sort.field === field ? (sort.direction === "asc" ? "↑" : "↓") : ""}
+                    {label}{" "}
+                    {sort.field === field
+                      ? sort.direction === "asc"
+                        ? "↑"
+                        : "↓"
+                      : ""}
                   </button>
                 </TableHead>
               ))}

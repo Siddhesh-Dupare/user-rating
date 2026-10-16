@@ -44,7 +44,8 @@ export default function StoresTable({ onBack }) {
           { signal: controller.signal },
         );
         const result = await response.json();
-        if (!response.ok) throw new Error(result.message || "Unable to load stores");
+        if (!response.ok)
+          throw new Error(result.message || "Unable to load stores");
         setStores(result.stores);
       } catch (requestError) {
         if (requestError.name !== "AbortError") {
@@ -61,7 +62,9 @@ export default function StoresTable({ onBack }) {
     setSort((current) => ({
       sortBy,
       sortOrder:
-        current.sortBy === sortBy && current.sortOrder === "asc" ? "desc" : "asc",
+        current.sortBy === sortBy && current.sortOrder === "asc"
+          ? "desc"
+          : "asc",
     }));
   }
 
@@ -73,13 +76,27 @@ export default function StoresTable({ onBack }) {
     <Card className="mt-8">
       <CardHeader className="flex flex-row items-center justify-between gap-4">
         <CardTitle>Stores</CardTitle>
-        <Button variant="outline" onClick={onBack}>Back to dashboard</Button>
+        <Button variant="outline" onClick={onBack}>
+          Back to dashboard
+        </Button>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid gap-3 md:grid-cols-3">
-          <Input placeholder="Filter by name" value={filters.name} onChange={(event) => updateFilter("name", event.target.value)} />
-          <Input placeholder="Filter by email" value={filters.email} onChange={(event) => updateFilter("email", event.target.value)} />
-          <Input placeholder="Filter by address" value={filters.address} onChange={(event) => updateFilter("address", event.target.value)} />
+          <Input
+            placeholder="Filter by name"
+            value={filters.name}
+            onChange={(event) => updateFilter("name", event.target.value)}
+          />
+          <Input
+            placeholder="Filter by email"
+            value={filters.email}
+            onChange={(event) => updateFilter("email", event.target.value)}
+          />
+          <Input
+            placeholder="Filter by address"
+            value={filters.address}
+            onChange={(event) => updateFilter("address", event.target.value)}
+          />
         </div>
         {error && <p className="text-sm text-destructive">{error}</p>}
         <Table>
@@ -87,8 +104,16 @@ export default function StoresTable({ onBack }) {
             <TableRow>
               {columns.map((column) => (
                 <TableHead key={column.accessorKey}>
-                  <button type="button" onClick={() => toggleSort(column.accessorKey)}>
-                    {column.header} {sort.sortBy === column.accessorKey ? (sort.sortOrder === "asc" ? "↑" : "↓") : ""}
+                  <button
+                    type="button"
+                    onClick={() => toggleSort(column.accessorKey)}
+                  >
+                    {column.header}{" "}
+                    {sort.sortBy === column.accessorKey
+                      ? sort.sortOrder === "asc"
+                        ? "↑"
+                        : "↓"
+                      : ""}
                   </button>
                 </TableHead>
               ))}
@@ -108,7 +133,10 @@ export default function StoresTable({ onBack }) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
                   No stores found.
                 </TableCell>
               </TableRow>
