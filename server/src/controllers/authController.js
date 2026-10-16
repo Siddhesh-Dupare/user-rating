@@ -1,6 +1,6 @@
 import { pool } from "../db.js";
 
-const supportedRoles = new Set(["ADMIN", "USER", "OWNER"]);
+const supportedRoles = new Set(["ADMIN", "USER", "STORE_OWNER"]);
 
 export async function login(req, res) {
   const { email, password } = req.body;

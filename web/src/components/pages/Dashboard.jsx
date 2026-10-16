@@ -28,6 +28,7 @@ import {
 import { clearCredentials } from "@/store/authSlice";
 import CreateAdmin from "./CreateAdmin";
 import CreateUser from "./CreateUser";
+import CreateStore from "./CreateStore";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,6 +43,7 @@ export default function Dashboard({ role }) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isCreateAdminOpen, setIsCreateAdminOpen] = useState(false);
   const [isCreateUserOpen, setIsCreateUserOpen] = useState(false);
+  const [isCreateStoreOpen, setIsCreateStoreOpen] = useState(false);
   const dashboardRole = user?.role || role;
   const roleLabel = dashboardRole
     ? dashboardRole.charAt(0) + dashboardRole.slice(1).toLowerCase()
@@ -142,7 +144,9 @@ export default function Dashboard({ role }) {
                 <DropdownMenuItem onClick={() => setIsCreateUserOpen(true)}>
                   Create User
                 </DropdownMenuItem>
-                <DropdownMenuItem>Create Owner</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsCreateStoreOpen(true)}>
+                  Create Store
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => setIsCreateAdminOpen(true)}
                 >
@@ -171,6 +175,16 @@ export default function Dashboard({ role }) {
           aria-label="Create User"
         >
           <CreateUser onCancel={() => setIsCreateUserOpen(false)} />
+        </div>
+      )}
+      {isCreateStoreOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Create Store"
+        >
+          <CreateStore onCancel={() => setIsCreateStoreOpen(false)} />
         </div>
       )}
     </SidebarProvider>

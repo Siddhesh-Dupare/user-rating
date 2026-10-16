@@ -85,7 +85,8 @@ export default function LoginForm() {
 
       if (result.user.role === "ADMIN") navigate("/admin/dashboard");
       else if (result.user.role === "USER") navigate("/user/dashboard");
-      else if (result.user.role === "OWNER") navigate("/owner/dashboard");
+      else if (result.user.role === "STORE_OWNER")
+        navigate("/store-owner/dashboard");
     } catch (error) {
       console.error("Unable to connect to the server ", error);
       toast.add({

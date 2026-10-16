@@ -15,8 +15,8 @@ function App() {
           />
           <Route path="/user/dashboard" element={<Dashboard role="USER" />} />
           <Route
-            path="/owner/dashboard"
-            element={<Dashboard role="OWNER" />}
+            path="/store-owner/dashboard"
+            element={<Dashboard role="STORE_OWNER" />}
           />
           {/* <Route
             path="/user/dashboard"
