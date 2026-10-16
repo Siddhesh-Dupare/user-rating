@@ -90,7 +90,7 @@ describe("Get the system administrator", () => {
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toEqual({
-      message: "Invalid administrator credentials",
+      message: "Invalid email or password",
     });
   });
 });

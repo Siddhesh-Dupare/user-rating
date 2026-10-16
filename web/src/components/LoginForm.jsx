@@ -78,9 +78,8 @@ export default function LoginForm() {
         description: result.message,
       });
 
-      if (result.user.role === "ADMIN")
-        navigate("/admin/dashboard");
-
+      if (result.user.role === "ADMIN") navigate("/admin/dashboard");
+      else if (result.user.role === "USER") navigate("/user/dashboard");
     } catch (error) {
       console.error("Unable to connect to the server ", error);
       toast.add({

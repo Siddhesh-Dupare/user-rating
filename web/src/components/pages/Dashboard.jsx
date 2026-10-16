@@ -1,32 +1,89 @@
-import { LayoutDashboard, Settings, Star, Users } from "lucide-react";
+import {
+  CircleUserRound,
+  LayoutDashboard,
+  Settings,
+  Star,
+  Users,
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import {
+  SidebarProvider,
+  Sidebar,
+  SidebarTrigger,
+  SidebarHeader,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+} from "@/components/ui/sidebar";
 
 export default function Dashboard() {
   return (
-    <aside className="flex min-h-screen w-64 flex-col border-r bg-background p-4">
-      <div className="px-3 py-2 text-lg font-semibold">User Rating</div>
-      <Separator className="my-4" />
-
-      <nav className="flex flex-1 flex-col gap-2">
-        <Button variant="secondary" className="justify-start gap-3">
-          <LayoutDashboard />
-          Dashboard
-        </Button>
-        <Button variant="ghost" className="justify-start gap-3">
-          <Star />
-          Ratings
-        </Button>
-        <Button variant="ghost" className="justify-start gap-3">
-          <Users />
-          Users
-        </Button>
-        <Button variant="ghost" className="justify-start gap-3">
-          <Settings />
-          Settings
-        </Button>
-      </nav>
-    </aside>
+    <SidebarProvider>
+      <Sidebar>
+        <SidebarHeader className="px-4 py-3 text-lg font-semibold">
+          Administrator
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupLabel>Administration</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton isActive tooltip="Dashboard">
+                    <LayoutDashboard />
+                    <span>Dashboard</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton tooltip="Ratings">
+                    <Star />
+                    <span>Ratings</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton tooltip="Users">
+                    <Users />
+                    <span>Users</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton tooltip="Settings">
+                    <Settings />
+                    <span>Settings</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+        <SidebarFooter>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                size="lg"
+                className="h-auto items-center py-2"
+                tooltip="Administrator profile"
+              >
+                <CircleUserRound className="size-8" />
+                <span className="flex min-w-0 flex-col items-start">
+                  <span className="truncate font-medium">Administrator</span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    admin@gmail.com
+                  </span>
+                </span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
+      </Sidebar>
+      <main className="flex-1 p-2">
+        <SidebarTrigger />
+      </main>
+    </SidebarProvider>
   );
 }

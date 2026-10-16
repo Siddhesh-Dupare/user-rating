@@ -1,6 +1,8 @@
 import { pool } from "../db.js";
 
-export async function loginAdministrator(req, res) {
+const supportedRoles = new Set(["ADMIN", "USER", "OWNER"]);
+
+export async function login(req, res) {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -14,20 +16,21 @@ export async function loginAdministrator(req, res) {
       `SELECT id, name, email, address, role
        FROM users
        WHERE email = $1
-         AND password = $2
-         AND role = 'ADMIN'`,
+         AND password = $2`,
       [email, password],
     );
 
-    if (result.rows.length === 0) {
+    const user = result.rows[0];
+
+    if (!user || !supportedRoles.has(user.role)) {
       return res.status(401).json({
-        message: "Invalid administrator credentials",
+        message: "Invalid email or password",
       });
     }
 
     return res.status(200).json({
-      message: "Administrator authenticated successfully",
-      user: result.rows[0],
+      message: "Login successful",
+      user,
     });
   } catch (error) {
     console.error("Administrator login failed", error);
@@ -37,3 +40,5 @@ export async function loginAdministrator(req, res) {
     });
   }
 }
+
+export const loginAdministrator = login;
