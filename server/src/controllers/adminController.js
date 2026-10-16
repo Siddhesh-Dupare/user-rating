@@ -114,3 +114,28 @@ export async function getStoreOwners(req, res) {
     });
   }
 }
+
+export async function getUsersAndAdmins(req, res) {
+  const { name = "", email = "", address = "", role = "" } = req.query;
+
+  try {
+    const result = await pool.query(
+      `SELECT id, name, email, address, role
+       FROM users
+       WHERE role IN ('USER', 'ADMIN')
+         AND name ILIKE $1
+         AND email ILIKE $2
+         AND address ILIKE $3
+         AND role ILIKE $4
+       ORDER BY name`,
+      [`%${name}%`, `%${email}%`, `%${address}%`, `%${role}%`],
+    );
+
+    return res.status(200).json({ users: result.rows });
+  } catch (error) {
+    console.error("User and administrator retrieval failed", error);
+    return res.status(500).json({
+      message: "Unable to retrieve users and administrators",
+    });
+  }
+}

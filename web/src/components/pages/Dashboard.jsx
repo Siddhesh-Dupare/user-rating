@@ -31,6 +31,7 @@ import CreateAdmin from "./CreateAdmin";
 import CreateUser from "./CreateUser";
 import CreateStore from "./CreateStore";
 import StoresTable from "./StoresTable";
+import UsersTable from "./UsersTable";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,6 +54,7 @@ export default function Dashboard({ role }) {
   const [isCreateUserOpen, setIsCreateUserOpen] = useState(false);
   const [isCreateStoreOpen, setIsCreateStoreOpen] = useState(false);
   const [isStoresOpen, setIsStoresOpen] = useState(false);
+  const [isUsersOpen, setIsUsersOpen] = useState(false);
   const [adminStats, setAdminStats] = useState(null);
   const dashboardRole = user?.role || role;
   const roleLabel = dashboardRole
@@ -98,9 +100,12 @@ export default function Dashboard({ role }) {
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton
-                    isActive={!isStoresOpen}
+                    isActive={!isStoresOpen && !isUsersOpen}
                     tooltip="Dashboard"
-                    onClick={() => setIsStoresOpen(false)}
+                    onClick={() => {
+                      setIsStoresOpen(false);
+                      setIsUsersOpen(false);
+                    }}
                   >
                     <LayoutDashboard />
                     <span>Dashboard</span>
@@ -112,18 +117,30 @@ export default function Dashboard({ role }) {
                     <span>Ratings</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-                <SidebarMenuItem>
-                  <SidebarMenuButton tooltip="Users">
-                    <Users />
-                    <span>Users</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                {dashboardRole === "ADMIN" && (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      isActive={isUsersOpen}
+                      tooltip="Users"
+                      onClick={() => {
+                        setIsUsersOpen(true);
+                        setIsStoresOpen(false);
+                      }}
+                    >
+                      <Users />
+                      <span>Users</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
                 {dashboardRole === "ADMIN" && (
                   <SidebarMenuItem>
                     <SidebarMenuButton
                       isActive={isStoresOpen}
                       tooltip="Stores"
-                      onClick={() => setIsStoresOpen(true)}
+                      onClick={() => {
+                        setIsStoresOpen(true);
+                        setIsUsersOpen(false);
+                      }}
                     >
                       <Store />
                       <span>Stores</span>
@@ -178,7 +195,9 @@ export default function Dashboard({ role }) {
       </Sidebar>
       <main className="flex-1 p-2">
         <SidebarTrigger />
-        {isStoresOpen ? (
+        {isUsersOpen ? (
+          <UsersTable onBack={() => setIsUsersOpen(false)} />
+        ) : isStoresOpen ? (
           <StoresTable onBack={() => setIsStoresOpen(false)} />
         ) : (
           <>
