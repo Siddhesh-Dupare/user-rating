@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -12,15 +13,16 @@ import {
 } from "@/components/ui/table";
 
 const columns = [
-  { accessorKey: "name", header: "Name" },
-  { accessorKey: "email", header: "Email" },
+  { accessorKey: "name", header: "Store Name" },
   { accessorKey: "address", header: "Address" },
-  { accessorKey: "rating", header: "Rating" },
+  { accessorKey: "overallRating", header: "Overall Rating" },
 ];
 
-export default function StoreListingsTable() {
+export default function StoreListingsTable({ userEmail }) {
   const [stores, setStores] = useState([]);
   const [search, setSearch] = useState("");
+  const [ratingValues, setRatingValues] = useState({});
+  const [ratingError, setRatingError] = useState({});
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -28,7 +30,7 @@ export default function StoreListingsTable() {
 
     async function loadStores() {
       try {
-        const query = new URLSearchParams({ search });
+        const query = new URLSearchParams({ search, userEmail });
         const response = await fetch(`http://localhost:5000/api/store?${query}`, {
           signal: controller.signal,
         });
@@ -46,7 +48,35 @@ export default function StoreListingsTable() {
 
     loadStores();
     return () => controller.abort();
-  }, [search]);
+  }, [search, userEmail]);
+
+  async function submitRating(storeId) {
+    const rating = Number(ratingValues[storeId]);
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+      setRatingError((current) => ({
+        ...current,
+        [storeId]: "Choose a whole-number rating from 1 to 5.",
+      }));
+      return;
+    }
+    setRatingError((current) => ({ ...current, [storeId]: "" }));
+
+    const response = await fetch("http://localhost:5000/api/store/ratings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ storeId, userEmail, rating }),
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      setError(result.message || "Unable to submit rating");
+      return;
+    }
+    setStores((current) =>
+      current.map((store) =>
+        store.id === storeId ? { ...store, userRating: result.rating } : store,
+      ),
+    );
+  }
 
   return (
     <Card className="ml-4 mt-8">
@@ -67,6 +97,8 @@ export default function StoreListingsTable() {
               {columns.map((column) => (
                 <TableHead key={column.accessorKey}>{column.header}</TableHead>
               ))}
+              <TableHead>User&apos;s Submitted Rating</TableHead>
+              <TableHead>Rating Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -75,15 +107,46 @@ export default function StoreListingsTable() {
                 <TableRow key={store.id}>
                   {columns.map((column) => (
                     <TableCell key={column.accessorKey}>
-                      {store[column.accessorKey] ??
-                        (column.accessorKey === "rating" ? "Not rated" : "")}
+                      {column.accessorKey === "overallRating"
+                        ? store.overallRating || "Not rated"
+                        : store[column.accessorKey] ?? ""}
                     </TableCell>
                   ))}
+                  <TableCell>{store.userRating ?? "Not rated"}</TableCell>
+                  <TableCell className="flex items-center gap-2">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          className="w-20"
+                          type="number"
+                          min="1"
+                          max="5"
+                          step="1"
+                          value={ratingValues[store.id] ?? store.userRating ?? ""}
+                          onChange={(event) =>
+                            setRatingValues((current) => ({
+                              ...current,
+                              [store.id]: event.target.value,
+                            }))
+                          }
+                          aria-label={`Rating for ${store.name}`}
+                        />
+                        <Button type="button" size="sm" onClick={() => submitRating(store.id)}>
+                          {store.userRating ? "Modify" : "Submit"}
+                        </Button>
+                      </div>
+                      {ratingError[store.id] && (
+                        <p className="mt-1 text-xs text-destructive">
+                          {ratingError[store.id]}
+                        </p>
+                      )}
+                    </div>
+                  </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell colSpan={columns.length + 2} className="h-24 text-center">
                   No stores found.
                 </TableCell>
               </TableRow>

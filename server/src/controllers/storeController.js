@@ -66,6 +66,7 @@ export async function createStore(req, res) {
 }
 
 export async function getStores(req, res) {
+  const userEmail = String(req.query?.userEmail || "");
   const searchTerms = String(req.query?.search || "")
     .trim()
     .split(/\s+/)
@@ -73,22 +74,60 @@ export async function getStores(req, res) {
 
   try {
     const searchConditions = searchTerms.map(
-      (_, index) => `(name ILIKE $${index + 1} OR address ILIKE $${index + 1})`,
+      (_, index) =>
+        `(store.name ILIKE $${index + 2} OR store.address ILIKE $${index + 2})`,
     );
     const values = searchTerms.map((term) => `%${term}%`);
 
     const result = await pool.query(
-      `SELECT id, name, email, address, NULL::numeric AS rating
-       FROM users
-       WHERE role = 'STORE_OWNER'
+      `SELECT store.id, store.name, store.address,
+              COALESCE(ROUND(AVG(all_ratings.rating), 2), 0) AS "overallRating",
+              user_rating.rating AS "userRating"
+       FROM users store
+       LEFT JOIN ratings all_ratings ON all_ratings.store_id = store.id
+       LEFT JOIN users rating_user ON rating_user.email = $1
+       LEFT JOIN ratings user_rating
+         ON user_rating.store_id = store.id
+        AND user_rating.user_id = rating_user.id
+       WHERE store.role = 'STORE_OWNER'
        ${searchConditions.length ? `AND ${searchConditions.join(" AND ")}` : ""}
+       GROUP BY store.id, store.name, store.address, user_rating.rating
        ORDER BY name`,
-      values,
+      [userEmail, ...values],
     );
 
     return res.status(200).json({ stores: result.rows });
   } catch (error) {
     console.error("Store retrieval failed", error);
     return res.status(500).json({ message: "Unable to retrieve stores" });
+  }
+}
+
+export async function submitRating(req, res) {
+  const { storeId, userEmail, rating } = req.body;
+  const numericRating = Number(rating);
+
+  if (!Number.isInteger(numericRating) || numericRating < 1 || numericRating > 5) {
+    return res.status(400).json({ message: "Rating must be an integer from 1 to 5" });
+  }
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO ratings (store_id, user_id, rating)
+       SELECT $1, id, $3 FROM users WHERE email = $2 AND role = 'USER'
+       ON CONFLICT (store_id, user_id)
+       DO UPDATE SET rating = EXCLUDED.rating
+       RETURNING rating`,
+      [storeId, userEmail, numericRating],
+    );
+
+    if (!result.rows.length) {
+      return res.status(404).json({ message: "User or store not found" });
+    }
+
+    return res.status(200).json({ rating: result.rows[0].rating });
+  } catch (error) {
+    console.error("Rating submission failed", error);
+    return res.status(500).json({ message: "Unable to submit rating" });
   }
 }

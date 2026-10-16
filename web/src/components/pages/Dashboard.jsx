@@ -307,7 +307,9 @@ export default function Dashboard({ role }) {
                 </CardContent>
               </Card>
             )}
-            {dashboardRole === "USER" && <StoreListingsTable />}
+            {dashboardRole === "USER" && (
+              <StoreListingsTable userEmail={user?.email} />
+            )}
           </>
         )}
       </main>

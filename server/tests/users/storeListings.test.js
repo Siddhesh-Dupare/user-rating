@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 import { pool } from "../../src/db.js";
-import { getStores } from "../../src/controllers/storeController.js";
+import { getStores, submitRating } from "../../src/controllers/storeController.js";
 
 function responseMock() {
   return {
@@ -31,7 +31,7 @@ describe("Store listings", () => {
     expect(response.body).toEqual({ stores });
     expect(querySpy).toHaveBeenCalledWith(
       expect.stringContaining("role = 'STORE_OWNER'"),
-      [],
+      [""],
     );
     querySpy.mockRestore();
   });
@@ -55,10 +55,56 @@ describe("Store listings", () => {
     await getStores({ query: { search: "ganesh pune" } }, response);
 
     expect(response.statusCode).toBe(200);
-    expect(querySpy).toHaveBeenCalledWith(expect.stringContaining("name ILIKE $1"), [
+    expect(querySpy).toHaveBeenCalledWith(expect.stringContaining("name ILIKE $2"), [
+      "",
       "%ganesh%",
       "%pune%",
     ]);
+    querySpy.mockRestore();
+  });
+
+  test("submits a rating from 1 to 5 for a user and store", async () => {
+    const querySpy = vi.spyOn(pool, "query").mockResolvedValueOnce({
+      rows: [{ rating: 5 }],
+    });
+    const response = responseMock();
+
+    await submitRating(
+      {
+        body: {
+          storeId: "store-id",
+          userEmail: "user@example.com",
+          rating: 5,
+        },
+      },
+      response,
+    );
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual({ rating: 5 });
+    querySpy.mockRestore();
+  });
+
+  test("rejects ratings outside the 1 to 5 scale", async () => {
+    const querySpy = vi.spyOn(pool, "query");
+    const response = responseMock();
+
+    await submitRating(
+      {
+        body: {
+          storeId: "store-id",
+          userEmail: "user@example.com",
+          rating: 6,
+        },
+      },
+      response,
+    );
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toEqual({
+      message: "Rating must be an integer from 1 to 5",
+    });
+    expect(querySpy).not.toHaveBeenCalled();
     querySpy.mockRestore();
   });
 });

@@ -11,6 +11,18 @@ export const pool = new Pool({
   password: process.env.DB_PASSWORD,
 });
 
+export async function ensureRatingsTable() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS ratings (
+      id SERIAL PRIMARY KEY,
+      store_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      rating INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
+      UNIQUE (store_id, user_id)
+    )
+  `);
+}
+
 pool.on("error", (err) => {
   console.error("Unexpected PostGreSQL pool Error: ", err);
 });
